@@ -1,0 +1,67 @@
+/* producer consumer
+ *
+ * SRA test example
+ * Created by Abel Garcia
+ * 2016
+ */
+
+
+Int producer(Int someInfo) {
+	
+	    Fut<Int> newSomeInfoFut = this!calculate(someInfo);
+	    Int newSomeInfo = newSomeInfoFut.get;
+	    Fut<Int> recCall = this!producer(newSomeInfo);
+	    
+	    Int result = recCall.get;
+	    return recCall;
+	
+}
+
+Int calculate(Int someInfo){
+	
+	if(someInfo > 100){
+        VM m1 = new VM();
+        Fut<Int> fwork = m1!someWork(someInfo);
+        Int work = fwork.get;
+        Fut<Int> fres = m1!consume(someInfo);
+        Int res = fres.get;
+        release m1;
+        return someInfo + 10;
+    }else{
+        VM m1 = new VM();
+        VM m2 = new VM();
+        Fut<Int> fwork = m1!someWork(someInfo);
+        Fut<Int> fwork2 = m2!someWork(someInfo);
+        Int work = fwork.get;
+        Int work2 = fwork2.get;
+        Fut<Int> fres = m1!consume(someInfo);
+        Int res = fres.get;
+        Fut<Int> fres2 = m2!consume(someInfo);
+        Int res2 = fres2.get;
+        release m1;
+        release m2;
+        return 10;
+    }
+    
+}
+
+Int someWork(Int someInfo){
+    return someInfo;
+}
+
+Int someReading(Int someInfo){
+    return 0;
+}
+
+Int consume(Int someInfo){
+    VM m = new VM();
+    Fut<Int> fres = m!someReading(someInfo);
+    Int res = fres.get;
+    release m;
+    return 0;
+}
+
+{
+	Fut<Int> res = this!producer(10);
+	Int i = res.get;
+}

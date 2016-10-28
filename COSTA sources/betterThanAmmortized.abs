@@ -1,0 +1,43 @@
+/* betterThanAmmortized  
+ *
+ * SRA test example
+ * Created by Abel Garcia
+ * 2016
+ */
+
+module TestSRA;
+
+interface ITest{
+	Int betterThanAmortized(Int n, Int m);
+}
+
+class Test implements ITest {
+
+  [n>0]
+  Int betterThanAmortized(Int n, Int m) {
+  	
+     Fut<Int> f ; Int z = 0;
+      if (n==0) {
+          z = 0;
+      }else if (n>m) { 
+          [x == acquire(1)]
+          ITest t = new Test();
+          f = t!betterThanAmortized(n-1,m) ; 
+          z = f.get ;           
+      } else { 
+          [x == acquire(2)]
+          ITest t = new Test();
+          f = t!betterThanAmortized(n-1,m) ; 
+          z = f.get ;           
+      }
+    return z;
+  
+  }
+  
+}
+
+{
+	ITest t = new Test(); Fut<Int> f ; Int z = 0;
+	f = t!betterThanAmortized(200, 100) ;
+	z = f.get ;
+}

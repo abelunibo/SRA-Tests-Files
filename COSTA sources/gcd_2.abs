@@ -1,0 +1,38 @@
+/* greatest common divisor
+ *
+ * SRA test example
+ * Created by Abel Garcia
+ * 2016
+ */
+
+
+module TestSRA; 
+
+interface IMath {
+   Int gcd (Int x, Int y);
+}
+class Math implements IMath {
+
+  [x >= 0] [y >= 0]
+  Int gcd (Int x, Int y) {
+    Fut<Int> f; Int res = 0;
+    
+    if(x <= 0)
+      res = y;
+    else if(y <= 0)
+      res = x;
+    else if(x > y){
+      [x == acquire(1)]
+      IMath m = new Math();
+      f = m!gcd(x - y, y); 
+      res = f.get;
+    }else{
+      [x == acquire(1)]
+      IMath m = new Math();
+      f = m!gcd(y - x, y); 
+      res = f.get;
+    }      
+    
+    return res;
+  } 
+}

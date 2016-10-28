@@ -1,0 +1,89 @@
+/* producer consumer
+ *
+ * SRA test example
+ * Created by Abel Garcia
+ * 2016
+ */
+
+
+module TestSRA;
+
+interface IProducer{
+  Int producer(Int someInfo);
+  Int calculate(Int someInfo);
+  Int someWork(Int someInfo); 
+  Int someReading(Int someInfo);
+  Int consume(Int someInfo);
+}
+
+class VM implements IProducer {
+  Int producer(Int someInfo) {
+      
+    Fut<Int> newSomeInfoFut = this!calculate(someInfo);
+          Int newSomeInfo = newSomeInfoFut.get;
+          Fut<Int> recCall = this!producer(newSomeInfo);
+          
+          Int result = recCall.get;
+          return result;
+      
+  }
+  
+   Int calculate(Int someInfo){
+      Int res = 0;
+      if(someInfo > 100){
+        [r==acquire(1)]
+          IProducer m1 = new VM();
+          Fut<Int> fwork = m1!someWork(someInfo);
+          Int work = fwork.get;
+          Fut<Int> fres = m1!consume(someInfo);
+          res = fres.get;
+          [r==release()]
+          res = someInfo + 10;          
+      }else{
+          [r==acquire(2)]
+          IProducer m1 = new VM();
+          IProducer m2 = new VM();
+          Fut<Int> fwork = m1!someWork(someInfo);
+          Fut<Int> fwork2 = m2!someWork(someInfo);
+          Int work = fwork.get;
+          Int work2 = fwork2.get;
+          Fut<Int> fres = m1!consume(someInfo);
+          res = fres.get;
+          Fut<Int> fres2 = m2!consume(someInfo);
+          Int res2 = fres2.get;
+          [r==release()]
+          //release m1;
+          //release m2;
+          res = 10;
+      }
+      return res;
+      
+  }
+  
+  Int someWork(Int someInfo){
+      return someInfo;
+  }
+  
+  Int someReading(Int someInfo){
+      return 0;
+  }
+  
+  Int consume(Int someInfo){
+      IProducer m = new VM();
+      Fut<Int> fres = m!someReading(someInfo);
+      Int res = fres.get;
+      //release m;
+      return 0;
+  }
+  
+  Unit main(){
+      Fut<Int> res = this!producer(10);
+      Int i = res.get;
+  }
+ 
+    
+
+
+  
+}
+

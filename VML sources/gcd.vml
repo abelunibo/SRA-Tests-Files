@@ -1,0 +1,30 @@
+/* greatest common divisor
+ *
+ * SRA test example
+ * Created by Abel Garcia
+ * 2016
+ */
+ 
+ Int gcd(Int a, Int b){
+	Fut<Int> f ; Int res ; VM v;
+	if( a == 0)
+	    return a;
+	if(b == 0)
+	    return b;
+	if (a > b) { 
+	    v = new VM(); 
+	    f = v!gcd(a-b, b)
+	    res = f.get;
+	    return res;
+	} else { 
+		v = new VM();
+	    f = v!gcd(b-a, a)
+	    res = f.get;
+	    return res;
+	}
+}
+
+{
+  Fut<Int> ff = this!gcd(13,17);
+  Int a = ff.get;
+}

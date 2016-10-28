@@ -1,0 +1,24 @@
+/* greatest common divisor
+ *
+ * SRA test example
+ * Created by Abel Garcia
+ * 2016
+ */
+
+module TestSRA; 
+
+class Math {
+
+  [0 <= x] [0 <= y]
+  Unit gcd (Int x, Int y) {
+    while (x > 0 && y > 0) {
+      if (x > y){
+        [x == acquire(1)]
+        x = x - y;
+      } else {
+        [x == acquire(1)]
+        y = y - x;
+      }
+    }
+  } 
+}

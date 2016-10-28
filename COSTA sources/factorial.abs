@@ -1,0 +1,44 @@
+/* factorial
+ *
+ * SRA test example
+ * Created by Abel Garcia
+ * 2016
+ */
+ 
+module Factorial ;  
+interface IMath { Int fact_nc(Int n);
+	}
+class Math implements IMath {
+
+    [n > 0]
+	Int fact_nc(Int n){
+		Fut<Int> f ;
+		Int m = 0;
+         
+        if( n == 0 ){
+          m = 1;
+        } else {
+          [x==acquire(1)]
+          IMath math = new Math();
+          f = math!fact_nc(n - 1);
+          m = f.get;
+          [x==release()]
+          m = n * m;
+          
+        }
+      
+		
+		return m ; 
+	   }
+  
+  
+  
+     Int main(){
+        [x==acquire(1)]
+        Int i = 2;
+     	IMath m = new Math(); 
+ 		Fut<Int> fut = m!fact_nc(7); 
+ 		fut.get ;
+        return 0;
+  }
+}

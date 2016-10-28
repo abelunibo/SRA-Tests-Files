@@ -1,0 +1,39 @@
+/* double release identity problem
+ *
+ * SRA test example
+ * Created by Abel Garcia
+ * 2016
+ */
+
+
+
+module TestSRA;
+
+interface ITest{
+	Unit doubleRelease(Int a, Int b);
+}
+
+class Test implements ITest {
+
+  
+  Unit doubleRelease(Int a, Int b) {
+  	
+      Int z = 0;
+      if (a > 0) {
+          [x == acquire(1)]
+          z = 0;
+      }
+      if (b>0 && (b>a || a <b)) {         
+          [x == acquire(1)]
+          z = 0;      
+      }
+  
+  }
+  
+  Unit main(){
+    ITest t = new Test(); Fut<Unit> f ;
+	f = t!doubleRelease(200, 200) ;	
+    f.get;
+  }
+  
+}
